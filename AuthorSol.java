@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -11,7 +10,7 @@ import java.util.StringTokenizer;
 public class AuthorSol {
 	
 	static ArrayList<Integer>[] adj;
-	static int[][] a;
+	static int[] l, r;
 	static long[][] dp;
 	
 	public static void main(String[] args) {
@@ -21,11 +20,12 @@ public class AuthorSol {
 		T = fs.nextInt();
 		for (int tc = 1; tc <= T; tc++) {
 			int n = fs.nextInt();
-			a = new int[2][n];
+			l = new int[n];
+			r = new int[n];
 			adj = new ArrayList[n];
 			for (int i = 0; i < n; i++) {
-				a[0][i] = fs.nextInt();
-				a[1][i] = fs.nextInt();
+				l[i] = fs.nextInt();
+				r[i] = fs.nextInt();
 				adj[i] = new ArrayList<>();
 			}
 			for (int i = 0; i < n - 1; i++) {
@@ -34,22 +34,24 @@ public class AuthorSol {
 				adj[u].add(v);
 				adj[v].add(u);
 			}
-			dp = new long[2][n];
+			dp = new long[n][2];
 			dfs(0, -1);
-			System.out.println(Math.max(dp[0][0], dp[1][0]));
+			System.out.println(Math.max(dp[0][0], dp[0][1]));
 		}
 		out.close();
 	}
 	
-	static void dfs(int u, int p) {
-		dp[0][u] = dp[1][u] = 0;
+	static void dfs(int u, int parent) {
+		dp[u][0] = dp[u][1] = 0;
 		for (int v : adj[u]) { //this is the base case (basically, the leaf nodes)
-			if (v == p) { //to avoid visiting the parent again (since this is an undirected graph)
+			if (v == parent) { //to avoid visiting the parent again (since this is an undirected graph)
 				continue;
 			}
 			dfs(v, u);
-			dp[0][u] += Math.max(Math.abs(a[0][u] - a[1][v]) + dp[1][v], dp[0][v] + Math.abs(a[0][u] - a[0][v]));
-			dp[1][u] += Math.max(Math.abs(a[1][u] - a[1][v]) + dp[1][v], dp[0][v] + Math.abs(a[1][u] - a[0][v]));
+			//set value of node u to l[u]
+			dp[u][0] += Math.max(Math.abs(l[u] - l[v]) + dp[v][0], Math.abs(l[u] - r[v]) + dp[v][1]);
+			//set value of node u to r[u]
+			dp[u][1] += Math.max(Math.abs(r[u] - l[v]) + dp[v][0], Math.abs(r[u] - r[v]) + dp[v][1]);
 		}
 	}
 	
