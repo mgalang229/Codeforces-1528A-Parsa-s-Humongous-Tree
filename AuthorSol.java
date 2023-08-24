@@ -43,7 +43,7 @@ public class AuthorSol {
 	
 	static void dfs(int u, int p) {
 		dp[0][u] = dp[1][u] = 0;
-		for (int v : adj[u]) {
+		for (int v : adj[u]) { //this is the base case (basically, the leaf nodes)
 			if (v == p) { //to avoid visiting the parent again (since this is an undirected graph)
 				continue;
 			}
